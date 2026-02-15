@@ -1,18 +1,22 @@
-import React, { useState } from "react";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Navigate,
-} from "react-router-dom";
+import React from "react";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Login from "./components/Login/Login";
 import Profile from "./pages/ProfilePage";
 import Layout from "./components/Layout";
 import StudentsPage from "./pages/StudentsPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import { PublicRoute } from "./components/PublicRoute/PublicRoute";
 import UsersPage from "./pages/UsersPage";
 
 const router = createBrowserRouter([
-  { path: "/login", element: <Login /> },
+  {
+    path: "/login",
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    ),
+  },
   {
     path: "/",
     element: (
@@ -39,5 +43,3 @@ const router = createBrowserRouter([
 ]);
 
 export default router;
-
-

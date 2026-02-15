@@ -10,16 +10,15 @@ import {
 
 const AuthContext = createContext();
 
+// esto me deja destructurar -> { login} = useAuth();
 export function useAuth() {
   return useContext(AuthContext);
 }
 
-// esto me deja despues hacer destructuracion asi -> { login, logout, user } = useAuth();
-
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState("");
+  const [token, setToken] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState("");
 
   useEffect(() => {
     if (isAuth()) {
@@ -48,7 +47,7 @@ export function AuthProvider({ children }) {
     });
 
     if (!res.ok) {
-      throw new Error("Wrong email or password");
+      throw new Error("Wrong email or password. Please try again.");
     }
 
     const data = await res.json();
@@ -76,7 +75,7 @@ export function AuthProvider({ children }) {
     login,
     logout,
     updateAuth,
-    isAuthenticated: !!token,
+    isAuthenticated,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
