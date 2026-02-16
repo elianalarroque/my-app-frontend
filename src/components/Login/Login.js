@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth} from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { isAuth } from "../../utils/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -15,7 +15,7 @@ export default function Login() {
     if (isAuth()) {
       navigate("/profile");
     }
-  }, []);
+  }, [navigate]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -35,6 +35,7 @@ export default function Login() {
         <h2>Login</h2>
 
         <input
+          id="email"
           type="email"
           placeholder="Email"
           value={username}
@@ -43,6 +44,7 @@ export default function Login() {
         />
 
         <input
+          id="password"
           type="password"
           placeholder="Password"
           value={password}
