@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import DeleteButton from "../components/DeleteButton/DeleteButton";
+import { useNavigate } from "react-router-dom";
 
 export default function UsersPage() {
   const { token, user } = useAuth();
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
 
-  async function fetchUsers() {
+  const fetchUsers = useCallback(async () => {
     try {
       const res = await fetch("/api/users", {
         headers: {
@@ -17,23 +19,23 @@ export default function UsersPage() {
 
       const data = await res.json();
       // debugger;
-      console.log(data);
       setUsers(data);
     } catch (err) {
       console.error(err);
     }
-  }
+  }, [token]);
 
   useEffect(() => {
-    if (!user || user.type !== "admin") return;
+    /* si no esta logueado, sale de la funcion */
+    if (!user) return;
+    /* si quiere entrar forzadamente y no es admin lo mando a login y si esta logueado se ira a profile */
+    if (user.type !== "admin") {
+      alert("You are not authorized to view this page");
+      navigate("/login");
+    }
+    /* si todo bien entonces hago el fetch */
     fetchUsers();
-  }, [token, user]);
-
-  /* si quiere entrar forzadamente a /users y no es admin*/
-
-  if (user.type !== "admin") {
-    return alert("You are not authorized to view this page");
-  }
+  }, [user, navigate, fetchUsers]);
 
   /* funcion para borrar */
   async function handleDelete(userId) {
@@ -42,7 +44,7 @@ export default function UsersPage() {
       console.log("Deleting teacher:", userToDelete.teacher.id);
       console.log(userToDelete);
       if (userToDelete.teacher) {
-        // opcional: verificar si tiene students
+        // verificar si tiene students
         const resStudents = await fetch(
           `/api/teachers/${userToDelete.teacher.id}/students`,
           {
@@ -73,7 +75,7 @@ export default function UsersPage() {
       });
       if (!res.ok) throw new Error("Failed to delete user");
 
-      fetchUsers();
+      await fetchUsers();
     } catch (error) {
       console.error(error);
       alert("Error deleting user");
