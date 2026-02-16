@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import React, { useState, useEffect } from "react";
+import { useAuth} from "../../context/AuthContext";
+import { isAuth } from "../../utils/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -9,6 +10,12 @@ export default function Login() {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuth()) {
+      navigate("/profile");
+    }
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();

@@ -1,32 +1,52 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import DeleteButton from "../components/DeleteButton/DeleteButton";
 
 export default function StudentsPage() {
   const { token, user } = useAuth();
   const [students, setStudents] = useState([]);
 
-  useEffect(() => {
-    async function fetchStudents() {
-      try {
-        const teacherId = user.teacher.id;
+  async function fetchStudents() {
+    try {
+      const teacherId = user.teacher.id;
 
-        const res = await fetch(`/api/teachers/${teacherId}/students`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      const res = await fetch(`/api/teachers/${teacherId}/students`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        const data = await res.json();
-        setStudents(data);
-      } catch (err) {
-        console.error(err);
-      }
+      const data = await res.json();
+      setStudents(data);
+    } catch (err) {
+      console.error(err);
     }
+  }
 
+  useEffect(() => {
     if (user.type === "user" && user.teacher) {
       fetchStudents();
     }
   }, [token, user]);
+
+  /* funcion para eliminar */
+  async function handleDelete(studentId) {
+    try {
+      const res = await fetch(
+        `/api/students/${studentId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (!res.ok) throw new Error("Failed to delete student");
+
+      fetchStudents();
+    } catch (error) {
+      console.error(error);
+      alert("Error deleting student");
+    }
+  }
 
   return (
     <div className="container">
@@ -48,6 +68,12 @@ export default function StudentsPage() {
                 <td>{student.name}</td>
                 <td>{student.last_name}</td>
                 <td>{student.dni}</td>
+                <td>
+                  {" "}
+                  <DeleteButton
+                    onDelete={() => handleDelete(student.id)}
+                  />{" "}
+                </td>
               </tr>
             ))}
           </tbody>
