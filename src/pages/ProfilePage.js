@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 
 export default function ProfilePage() {
   const { user } = useAuth();
-  console.log(user);
+  console.log("user data",user);
 
   if (!user) return <p>Loading...</p>;
 
